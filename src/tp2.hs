@@ -12,18 +12,23 @@ TP2:
 (Contact {name::String, Phone::Int, email::String}), funciones add, find por name, y email
 10. Dada una matriz obtener la transpuesta
 -}
+import Data.List (nub)
 
-data Bit = Zero | One deriving Eq
--- instance Show Bit where 
---     Zero = "0"
---     One = "1"
-
+data Bit = Zero | One deriving (Show, Eq)
 type Binary = [Bit]
+data SumResult = SumResult{carry::Bit, result::Bit} deriving Eq
 
--- bitsum :: Bit -> Bit  -> (Bit, Bit)
--- bitsum Zero Zero = (_,_) 
--- bitsum One One = (_,_) 
--- bitsum _ _ = (_,_) 
+bitsum :: Bit -> Bit  -> SumResult
+bitsum Zero Zero = SumResult Zero Zero
+bitsum One One = SumResult One Zero
+bitsum _ _ = SumResult Zero One
+
+bitAdd :: Bit -> Bit -> Bit -> Binary
+bitAdd x y z = [result carryAdd, result secondAdd]
+    where
+        firstAdd = bitsum x y
+        secondAdd = bitsum (result firstAdd) z
+        carryAdd = bitsum (carry firstAdd) (carry secondAdd)
 
 
 -- 2. Definir un tipo arbol (Tree) y definir una función de construcción
@@ -49,8 +54,8 @@ treeElem x (Node a left right)
 
 
 -- 4. Dado el tipo Graph de 3, determinar  si existe camino entre dos nodos
-data Node a = Node a
-type Graph a = [(Node a, [Node a])]
+data GraphNode a = GraphNode a
+type Graph a = [(GraphNode a, [GraphNode a])]
 
 neighbors :: (Eq a) => (Graph a) -> a -> [a]
 neighbors [] _ = []
@@ -72,13 +77,14 @@ connectedV g v f t
 
 
 -- huffman
-import Data.List (nub)
 
 data HuffmanTree a = HuffmanNode a Int (HuffmanTree a) (HuffmanTree a) | Nil
 
-reps :: (Eq a) => a -> [a] -> Int
-reps _ [] = 0
-reps a (x:xs) = (if x == y then 1 else 0) + reps xs
+reps :: (Eq a) => [a] -> a -> Int
+reps [] _ = 0
+reps (x:xs) y
+        | x == y = 1 + reps xs y
+        | otherwise = reps xs y
 
 -- qty :: [a] -> [(a, Int)]
 

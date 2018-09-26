@@ -70,10 +70,10 @@ appearances i (x:xs)
 -- QUICKSORT 1
 quicksort1 :: (Ord a) => [a] -> [a]
 quicksort1 [] = []
-quicksort1 (x: xs) =
+quicksort1 (x:xs) =
     let smallerThan = [a | a <- xs, a <= x]
         greaterThan = [a | a <- xs, a > x]
-    in  smallerThan ++ [x] ++ greaterThan
+    in  (quicksort1 smallerThan) ++ [x] ++ (quicksort1 greaterThan)
 
 -- QUICKSORT 2
 quicksort2 :: (Ord a) => [a] -> [a]
@@ -121,5 +121,4 @@ foldr' f y [x] = f y x
 foldr' f y (x:xs) = foldr' f (f y x) xs
 
 sum'' :: (Num a) => [a] -> a
-sum'' [] = 0
-sum'' x = foldr (\x y -> x + y) 0 x
+sum'' = foldr' (\x y -> x + y) 0
