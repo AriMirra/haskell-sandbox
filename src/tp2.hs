@@ -1,47 +1,15 @@
--- para cambiar la precedencia y no usar paréntesis, puedo usar el signo $ y primero se ejecuta lo de la derecha del signo, y luego la izquierda
--- f (g [...]) == f $ g [...]
-
-{- data ; type ; alias
-    type le da un sobrenombre a un tipo de dato que ya existe, para mayor legibilidad
-    data define un tipo de dato que no existe
-type String = [Char] ; type Graph = [(a,[a])]
-data Tree = Leaf a | Branch a Tree Tree | Nil
-    instance Eq Tree (Eq a) => a where
-        (==) Branch x lf rf Branch y ls rs
-            | x == y = lf == ls && rf == rs
-            | otherwise = False
-        (==) Leaf x Branch _ _ _ = False
-        (==) Branch _ _ _ Leaf x = False
-
-data vs aliases
-    data Person = Person String String
-        firstName Person a b = a
-        lastName Person a b = b
-    data Person = Person {firstName :: String, lastName :: String} deriving (Eq)  
-    // deriving te ahorra de implementar TypeClasses, Eq compararía todos los atributos en el orden que fueron expresados
-    // si quiero una función de comparación particular la tendría que implementar yo
-        instance Eq Person where
-                (==) x y = x:DNI == y:DNI
-        firstName Person = Person : firstName
-        lastName p = p : firstName
-
-data Maybe a = Nothing | Just a
-divide :: (Num a) => a -> a -> Maybe a
-divide _ 0 = Nothing
-divide a b = Just a/b
--}
-
 {-
 TP2:
 1. Implementar la suma binaria
 2. Definir un tipo arbol (Tree) y definir una función de construcción
 3. Dado el tipo Graph [(Nodo, [Nodo Vecino])], determinar si existen ciclos
 4. Dado el tipo Graph de 3, determinar  si existe camino entre dos nodos
-5. Deginir una funciÛn que retorne los primeros N n˙meros primos
+5. Deginir una función que retorne los primeros N números primos
 6. Resolver el problema de las 8 reinas
 7. Implementar el algoritmo de compresiÛn de Huffman
 8. Dado el tipo de tree del punto 2, determinar la profundidad del ·rbol
-9. Implementar una lista de contactos (Contact {name::String, Phone::Int, email::String}), funciones add, find por name, y email
+9. Implementar una lista de contactos 
+(Contact {name::String, Phone::Int, email::String}), funciones add, find por name, y email
 10. Dada una matriz obtener la transpuesta
 -}
 
@@ -77,3 +45,40 @@ treeElem x (Node a left right)
     | x == a = True
     | x < a  = treeElem x left
     | x > a  = treeElem x right
+
+
+
+-- 4. Dado el tipo Graph de 3, determinar  si existe camino entre dos nodos
+data Node a = Node a
+type Graph a = [(Node a, [Node a])]
+
+neighbors :: (Eq a) => (Graph a) -> a -> [a]
+neighbors [] _ = []
+neighbors g a = foldr(\x y -> x ++ y) [] [(snd t) | t <- g, (fst t) == a] 
+-- list: quiero el segundo elemento de t, t toma del grafo donde el primer elemento de t == a
+    -- devuelve un solo elemento
+
+connected :: (Eq a) => (Graph a) -> a -> a -> Bool
+connected g f t = connectedV g [] f t
+
+connectedV :: (Eq a) => (Graph a) -> [a] -> a -> a -> Bool
+connectedV g v f t
+    | foldr (\r s -> r || s) False [z == t | z <- n] = True -- True si t está en los vecinos del grafo f
+    | foldr (\r s -> r || s) False [z == f | z <- v] = False
+    | otherwise = foldr (\r s -> r || s) False [connectedV g (v ++ [f]) z t | z <- n]
+    where n = neighbors g f
+
+-- f = from, t = to, g = graph, v = array de grafos vecinos
+
+
+-- huffman
+import Data.List (nub)
+
+data HuffmanTree a = HuffmanNode a Int (HuffmanTree a) (HuffmanTree a) | Nil
+
+reps :: (Eq a) => a -> [a] -> Int
+reps _ [] = 0
+reps a (x:xs) = (if x == y then 1 else 0) + reps xs
+
+-- qty :: [a] -> [(a, Int)]
+
