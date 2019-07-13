@@ -14,13 +14,14 @@ TP2:
 -}
 import Data.List (nub)
 
+--1. Implementar la suma binaria
 data Bit = Zero | One deriving (Show, Eq)
 type Binary = [Bit]
-data SumResult = SumResult{carry::Bit, result::Bit} deriving Eq
+data SumResult = SumResult{carry::Bit, result::Bit} deriving (Show, Eq)
 
-bitsum :: Bit -> Bit  -> SumResult
+bitsum :: Bit -> Bit -> SumResult
 bitsum Zero Zero = SumResult Zero Zero
-bitsum One One = SumResult One Zero
+bitsum One One = SumResult One One
 bitsum _ _ = SumResult Zero One
 
 bitAdd :: Bit -> Bit -> Bit -> Binary
